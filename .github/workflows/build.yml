@@ -60,6 +60,50 @@ jobs:
           path: ./out/MusicFree-${{ env.VERSION }}-win32-x64-portable.zip
           retention-days: 30
 
+  build-windows-arm64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Read version
+        run: |
+          $version = node -p "require('./package.json').version"
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+      - name: Package for Windows ARM64
+        run: pnpm run package -- --arch=arm64
+        env:
+          npm_config_arch: arm64
+      - uses: maotoumao/inno-setup-action-cli@main
+        with:
+          filepath: ./release/build-windows-arm64.iss
+          variables: /DMyAppVersion=${{ env.VERSION }} /DMyAppId=${{ secrets.MYAPPID }}
+      - name: Rename setup file
+        run: |
+          Rename-Item -Path "./out/MusicFreeSetup.exe" -NewName "MusicFree-${{ env.VERSION }}-win32-arm64-setup.exe"
+      - name: Generate portable
+        run: |
+          New-Item -ItemType Directory -Path "./out/MusicFree-win32-arm64/portable" -Force
+      - name: Archive portable
+        run: |
+          Compress-Archive -Path "./out/MusicFree-win32-arm64/*" -DestinationPath "./out/MusicFree-${{ env.VERSION }}-win32-arm64-portable.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MusicFree-${{ env.VERSION }}-win32-arm64-setup
+          path: ./out/MusicFree-${{ env.VERSION }}-win32-arm64-setup.exe
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MusicFree-${{ env.VERSION }}-win32-arm64-portable
+          path: ./out/MusicFree-${{ env.VERSION }}-win32-arm64-portable.zip
+          retention-days: 30
+
   build-windows-legacy:
     runs-on: windows-latest
     steps:

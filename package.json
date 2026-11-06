@@ -4,6 +4,7 @@
   "version": "0.0.8",
   "description": "一个插件化的音乐播放器",
   "main": ".webpack/main",
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "start": "electron-forge start",
     "dev": "electron-forge start --inspect-electron",
