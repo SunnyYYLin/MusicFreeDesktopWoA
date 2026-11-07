@@ -25,6 +25,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -64,6 +67,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64_arm64
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
