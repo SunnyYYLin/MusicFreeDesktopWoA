@@ -80,12 +80,25 @@ jobs:
         run: |
           $version = node -p "require('./package.json').version"
           echo "VERSION=$version" >> $env:GITHUB_ENV
+      - name: Prepare sharp ARM64 prebuilt vendor files
+        run: |
+          node node_modules/sharp/install/libvips.js
+          node node_modules/sharp/install/dll-copy.js
+        env:
+          npm_config_arch: arm64
+          npm_config_platform: win32
       - name: Package for Windows ARM64
         run: |
           pnpm run package:arm64
+          node node_modules/sharp/install/dll-copy.js
+          if (Test-Path "./out/MusicFree-win32-arm64/resources/app/node_modules/sharp") {
+            New-Item -ItemType Directory -Path "./out/MusicFree-win32-arm64/resources/app/node_modules/sharp/build/Release" -Force
+            Copy-Item -Path "./node_modules/sharp/build/Release/*.dll" -Destination "./out/MusicFree-win32-arm64/resources/app/node_modules/sharp/build/Release/" -Force -ErrorAction SilentlyContinue
+          }
           Get-ChildItem -Path "./out"
         env:
           npm_config_arch: arm64
+          npm_config_platform: win32
       - uses: maotoumao/inno-setup-action-cli@main
         with:
           filepath: ./release/build-windows-arm64.iss
