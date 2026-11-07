@@ -81,7 +81,9 @@ jobs:
           $version = node -p "require('./package.json').version"
           echo "VERSION=$version" >> $env:GITHUB_ENV
       - name: Package for Windows ARM64
-        run: pnpm run package -- --arch=arm64
+        run: |
+          pnpm run package:arm64
+          Get-ChildItem -Path "./out"
         env:
           npm_config_arch: arm64
       - uses: maotoumao/inno-setup-action-cli@main
